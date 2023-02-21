@@ -1,2 +1,16 @@
+title: Hash Collision
+author: aoife-fey
+
+description: >-
+  Assorted ramblings, devblogs, and whatever
+  else I feel like posting on here
+
 baseurl: /hash-collision
+url: https://aoife-fey.github.io/hash-collision
+
 theme: minima
+
+twitter_username: aoife_fey
+github_username: aoife-fey
+
+show_excerpts: true
