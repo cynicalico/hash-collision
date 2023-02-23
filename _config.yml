@@ -5,8 +5,8 @@ description: >-
   Assorted ramblings, devblogs, and whatever
   else I feel like posting on here
 
-baseurl: /hash-collision
-url: https://aoife-fey.github.io/hash-collision
+# baseurl: /hash-collision
+url: https://hash-collision.com
 
 theme: minima
 
