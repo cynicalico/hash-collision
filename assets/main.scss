@@ -3,10 +3,10 @@
 
 @import "{{ site.theme }}";
 
-.site-title::before {
-    content: url('{{ site.baseurl }}/assets/img/pikachu_sleeping_32x32.png');
-    display: inline-block;
-    position: relative;
-    width: 32px;
-	top: 2px;
-}
+// .site-title::before {
+//     content: url('{{ site.baseurl }}/assets/img/pikachu_sleeping_32x32.png');
+//     display: inline-block;
+//     position: relative;
+//     width: 32px;
+// 	top: 2px;
+// }
