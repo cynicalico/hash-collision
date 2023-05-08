@@ -15,7 +15,7 @@ For my graphics engine, Myco, I wanted to try and decouple the modules in the sy
 
 This is where an event bus comes in.
 
-I am not the first person to think of using an event bus to handle inter-system communication. It's extremely common in commerical game engines. My reasons for wanting this are as follows:
+I am not the first person to think of using an event bus to handle inter-system communication. It's extremely common in commercial game engines. My reasons for wanting this are as follows:
   1. System decoupling--if communication is done over events then there's no longer a requirement to have a direct references to systems contained within other systems except for convenience where desired.
   2. Flexibility--as stated already, systems can easily interact with any other systems, which makes it simple to add interactions in the future.
   3. Challenge--there are a lot of *bad* ways to do this, and I thought it would be fun to try my best to *not* do it poorly.
@@ -63,7 +63,7 @@ There was still the question of how to store callback functions that all take di
 
 ### Event Receivers and Payload Solution: Type Erasure
 
-I've had the need to store types with a shared interface in a vector before, and the pattern is quite simple. Create an abstract base class, then create a templated class from that base class, and store instances of it as a pointer to the base class--type erasure 101. But the argument type caused a new problem, since somehow the base needed to be able to accomodate anything that might be passed to it.
+I've had the need to store types with a shared interface in a vector before, and the pattern is quite simple. Create an abstract base class, then create a templated class from that base class, and store instances of it as a pointer to the base class--type erasure 101. But the argument type caused a new problem, since somehow the base needed to be able to accommodate anything that might be passed to it.
 
 `std::any` ended up being the solution I was looking for. The Receiver is very straightforward:
 
@@ -95,7 +95,7 @@ public:
 };
 ```
 
-`Receiver`s themseleves are just function objects that take some const ref to a payload. `ReceiverI` is the interface, and only consists of a single function that takes any argument. The `ReceiverWrap` does something useful with that `std::any` object, and converts to it its own template type. All together, it is used like so:
+`Receiver`s themselves are just function objects that take some const ref to a payload. `ReceiverI` is the interface, and only consists of a single function that takes any argument. The `ReceiverWrap` does something useful with that `std::any` object, and converts to it its own template type. All together, it is used like so:
 
 ```cpp
 struct Foo { int a; };
