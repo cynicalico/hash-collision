@@ -1,0 +1,67 @@
+.b98 {
+    font-family: "Cousine";
+}
+
+.b98 hr {
+    flex-basis: 100%;
+    height: 0;
+    margin: 0;
+    border: 0;
+}
+
+#bf-controls.b98 {
+    padding-bottom: 12px;
+}
+
+#bf-fungespace.b98 {
+    display: flex;
+    justify-content: center;
+    overflow: visible;
+    flex-flow: wrap;
+    font-size: 0;
+}
+
+#bf-fungespace.b98 pre {
+    overflow: visible;
+    padding: 1px 0 0 1px;
+    background-color: #eff1f5;
+    border: none;
+    border-radius: unset;
+}
+
+#bf-fungespace.b98 label {
+    font-size: 12px;
+}
+
+#bf-fungespace.b98 div {
+    text-align: left;
+}
+
+#bf-fungespace.b98 div div {
+    display: inline-flex;
+    overflow: hidden;
+    min-width: 10px;
+    max-width: 10px;
+    min-height: 16px;
+    max-height: 16px;
+}
+
+#bf-fungespace.b98 div div span {
+    display: inline-flex;
+    justify-content: center;
+    position: relative;
+    top: -7px;
+    min-width: 9px;
+    max-width: 9px;
+    min-height: 19px;
+    max-height: 19px;
+    margin: 3px 0 1px 0;
+    color: #4c4f69;
+    background-color: #ccd0da;
+    font-size: 14px;
+}
+
+#bf-fungespace.b98 div div span.cursor {
+    background-color: #dc8a78;
+    color: #dce0e8;
+}

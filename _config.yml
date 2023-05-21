@@ -1,15 +1,17 @@
+plugins:
+  - jekyll-remote-theme
+
 title: Hash Collision
-author: bo-fey
+author:
+  name: bo-fey
+  email: 93552084+bo-fey@users.noreply.github.com
 
-description: >-
-  Assorted ramblings, devblogs, and whatever
-  else I feel like posting on here
-
-# baseurl: /hash-collision
 url: https://hash-collision.com
 
-theme: minima
-
-github_username: bo-fey
+remote_theme: jekyll/minima
+minima:
+  skin: auto
+  social_links:
+    - { platform: github, user_url: "https://github.com/bo-fey" }
 
 show_excerpts: true
