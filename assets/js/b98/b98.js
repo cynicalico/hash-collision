@@ -1,7 +1,7 @@
 "use strict";
 
 let display = {
-    ROWS: 40,
+    ROWS: 25,
     COLS: 80,
     UNKNOWN: 191,
 
@@ -9,6 +9,9 @@ let display = {
 
     div: document.getElementById("bf-fungespace"),
     pre: null,
+
+    i_row: document.getElementById("bf-i-row"),
+    i_col: document.getElementById("bf-i-col"),
 
     initialize: function() {
         this.pre = document.createElement("pre");
@@ -45,6 +48,21 @@ let display = {
         for (let r = 0; r < this.ROWS; r++)
             for (let c = 0; c < this.COLS; c++)
                 this.put(r, c, String.fromCodePoint(fungespace.EMPTY));
+    },
+
+    put_region_from_fungespace: function(fs_r, fs_c, w, h) {
+        this.clear();
+
+        for (let r = 0; r < h; r++)
+            for (let c = 0; c < w; c++) {
+                let codepoint = fungespace.get(fs_r + r, fs_c + c);
+                if (codepoint < 32 || codepoint > 126)
+                    codepoint = 191;
+                this.put(r, c, String.fromCodePoint(codepoint));
+            }
+
+        this.i_row.value = fs_r;
+        this.i_col.value = fs_c;
     }
 }
 
@@ -160,6 +178,38 @@ let fungespace = {
             this.put(r, c, codepoint.codePointAt(0));
             c++;
         }
+
+        const region_w = Math.min(this.max_coord[1], display.COLS);
+        const region_h = Math.min(this.max_coord[0], display.ROWS);
+        display.put_region_from_fungespace(0, 0, region_w, region_h);
+    }
+}
+
+let stackstack = {
+    div: document.getElementById("bf-stack"),
+    stacks: [],
+
+    initialize: function() {
+        this.new_stack();
+        this.new_stack();
+    },
+
+    new_stack: function() {
+        this.stacks.push(document.createElement("div"));
+        const tl = document.createElement("div");
+        tl.append(this.stacks[this.stacks.length - 1]);
+        this.div.append(tl);
+        this.div.append(document.createElement("hr"));
+    },
+
+    push: function(v, stack_idx=0) {
+        const s = document.createElement("span");
+        s.innerHTML = v;
+        this.stacks[stack_idx].append(s);
+    },
+
+    pop: function(stack_idx=0) {
+        
     }
 }
 
@@ -194,4 +244,5 @@ document.getElementById("bf-b-load").addEventListener("click", (e) => {
  * MAIN *
  ********/
 
+stackstack.initialize();
 display.initialize();

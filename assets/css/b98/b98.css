@@ -1,5 +1,6 @@
 .b98 {
     font-family: "Cousine";
+    font-size: 12px;
 }
 
 .b98 hr {
@@ -9,11 +10,31 @@
     border: 0;
 }
 
-#bf-controls.b98 {
+#bf-top-level {
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+}
+
+#bf-container {
+    display: flex;
+    justify-content: left;
+    flex-flow: wrap;
+}
+
+#bf-controls {
     padding-bottom: 12px;
 }
 
-#bf-fungespace.b98 {
+#bf-i-row {
+    width: 4em;
+}
+
+#bf-i-col {
+    width: 4em;
+}
+
+#bf-fungespace {
     display: flex;
     justify-content: center;
     overflow: visible;
@@ -21,23 +42,20 @@
     font-size: 0;
 }
 
-#bf-fungespace.b98 pre {
+#bf-fungespace pre {
     overflow: visible;
     padding: 1px 0 0 1px;
     background-color: #eff1f5;
     border: none;
     border-radius: unset;
+    margin: 0;
 }
 
-#bf-fungespace.b98 label {
-    font-size: 12px;
-}
-
-#bf-fungespace.b98 div {
+#bf-fungespace div {
     text-align: left;
 }
 
-#bf-fungespace.b98 div div {
+#bf-fungespace div div {
     display: inline-flex;
     overflow: hidden;
     min-width: 10px;
@@ -46,7 +64,7 @@
     max-height: 16px;
 }
 
-#bf-fungespace.b98 div div span {
+#bf-fungespace div div span {
     display: inline-flex;
     justify-content: center;
     position: relative;
@@ -61,7 +79,42 @@
     font-size: 14px;
 }
 
-#bf-fungespace.b98 div div span.cursor {
+#bf-fungespace div div span.cursor {
     background-color: #dc8a78;
     color: #dce0e8;
+}
+
+#bf-stack {
+    display: flex;
+    justify-content: right;
+    flex-flow: wrap;
+    width: 100%;
+    background-color: #eff1f5;
+    overflow: hidden;
+}
+
+#bf-stack div {
+    display: inline-flex;
+    padding: 0;
+    margin: 1px 1px 1px 1px;
+    width: 100%;
+    background-color: #ccd0da;
+}
+
+#bf-stack div div {
+    display: inline-flex;
+    justify-content: flex-end;
+    flex-flow: wrap-reverse;
+    min-height: 1em;
+    overflow: hidden;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+#bf-stack div div span {
+    display: inline-flex;
+    justify-content: center;
+    color: #4c4f69;
+    padding-left: 1em;
+    overflow: hidden;
 }
