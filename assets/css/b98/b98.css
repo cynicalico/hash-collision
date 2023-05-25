@@ -1,6 +1,27 @@
 .b98 {
+    --b98-bg-color: #eff1f5;
+    --b98-border-color: #5c5f77;
+    --b98-text-color: #4c4f69;
+    --b98-text-bg-color: #ccd0da;
+    --b98-text-select-color: #dc8a78;
+}
+
+@media (prefers-color-scheme: dark) {
+    .b98 {
+        --b98-bg-color: #232634;
+        --b98-border-color: #b5bfe2;
+        --b98-text-color: #c6d0f5;
+        --b98-text-bg-color: #414559;
+        --b98-text-select-color: #f2d5cf;
+    }
+}
+
+.b98 {
     font-family: "Cousine";
     font-size: 12px;
+    background-color: var(--b98-bg-color);
+    color: var(--b98-text-color);
+    line-height: 1;
 }
 
 .b98 hr {
@@ -20,18 +41,78 @@
     display: flex;
     justify-content: left;
     flex-flow: wrap;
+    padding: 12px;
+}
+
+#bf-container .bf-header {
+    padding-top: 12px;
 }
 
 #bf-controls {
     padding-bottom: 12px;
 }
 
+#bf-controls button {
+    border: 1px solid;
+    border-color: var(--b98-border-color);
+    margin: 0;
+    padding: 1px;
+}
+
+#bf-fungespace-coordinates-controller {
+    display: inline-flex;
+    justify-content: left;
+    flex-flow: wrap;
+    /*margin-bottom: 4px;*/
+}
+
+#bf-fungespace-coordinates-controller label {
+    display: inline-flex;
+    /*border: 1px solid;*/
+    /*border-right: 0;*/
+    /*border-color: var(--b98-border-color);*/
+    padding: 0;
+    margin: 0 0 0 0;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}
+
 #bf-i-row {
-    width: 4em;
+    width: 5em;
+    /*border: 1px solid;*/
+    /*border-left: 0;*/
+    /*border-color: var(--b98-border-color);*/
+    border: none;
+    padding: 0;
+    margin: 0 12px 0 0;
+    outline: none;
+    box-shadow: none;
+    font-size: 12px;
 }
 
 #bf-i-col {
-    width: 4em;
+    width: 5em;
+    /*border: 1px solid;*/
+    /*border-left: 0;*/
+    /*border-color: var(--b98-border-color);*/
+    border: none;
+    padding: 0;
+    margin: 0 12px 0 0;
+    outline: none;
+    box-shadow: none;
+    font-size: 12px;
 }
 
 #bf-fungespace {
@@ -45,7 +126,7 @@
 #bf-fungespace pre {
     overflow: visible;
     padding: 1px 0 0 1px;
-    background-color: #eff1f5;
+    background-color: var(--b98-bg-color);
     border: none;
     border-radius: unset;
     margin: 0;
@@ -68,14 +149,14 @@
     display: inline-flex;
     justify-content: center;
     position: relative;
-    top: -7px;
+    top: -4px;
     min-width: 9px;
     max-width: 9px;
     min-height: 19px;
     max-height: 19px;
-    margin: 3px 0 1px 0;
-    color: #4c4f69;
-    background-color: #ccd0da;
+    margin: 5px 0 1px 0;
+    color: var(--b98-text-color);
+    background-color: var(--b98-text-bg-color);
     font-size: 14px;
 }
 
@@ -89,7 +170,7 @@
     justify-content: right;
     flex-flow: wrap;
     width: 100%;
-    background-color: #eff1f5;
+    background-color: var(--b98-bg-color);
     overflow: hidden;
 }
 
@@ -98,7 +179,7 @@
     padding: 0;
     margin: 1px 1px 1px 1px;
     width: 100%;
-    background-color: #ccd0da;
+    background-color: var(--b98-text-bg-color);
 }
 
 #bf-stack div div {
@@ -109,12 +190,34 @@
     overflow: hidden;
     flex-wrap: wrap;
     flex-direction: row;
+    padding: 0;
+    margin: 0;
 }
 
 #bf-stack div div span {
     display: inline-flex;
     justify-content: center;
-    color: #4c4f69;
+    color: var(--b98-text-color);
     padding-left: 1em;
     overflow: hidden;
+}
+
+#bf-output-container {
+    display: flex;
+    justify-content: left;
+    flex-flow: wrap;
+    width: 100%;
+    background-color: var(--b98-bg-color);
+    overflow: hidden;
+}
+
+#bf-output {
+    width: 100%;
+    background-color: var(--b98-text-bg-color);
+    color: var(--b98-text-color);
+    border: none;
+    outline: none;
+    box-shadow: none;
+    resize: vertical;
+    margin: 1px 1px 1px 1px;
 }

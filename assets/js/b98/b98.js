@@ -1,5 +1,9 @@
 "use strict";
 
+function randint(start, end){
+    return Math.floor(Math.random() * (end - start) + start);
+}
+
 let display = {
     ROWS: 25,
     COLS: 80,
@@ -50,6 +54,14 @@ let display = {
                 this.put(r, c, String.fromCodePoint(fungespace.EMPTY));
     },
 
+    set_cursor: function (r, c) {
+        this.cells[r][c].classList.add('cursor');
+    },
+
+    unset_cursor: function (r, c) {
+        this.cells[r][c].classList.remove('cursor');
+    },
+
     put_region_from_fungespace: function(fs_r, fs_c, w, h) {
         this.clear();
 
@@ -63,6 +75,31 @@ let display = {
 
         this.i_row.value = fs_r;
         this.i_col.value = fs_c;
+    },
+
+    stack: {
+        div: document.getElementById("bf-stack"),
+        stacks: [],
+
+        new: function() {
+            this.stacks.push(document.createElement("div"));
+            const tl = document.createElement("div");
+            tl.append(this.stacks[this.stacks.length - 1]);
+            this.div.append(tl);
+            this.div.append(document.createElement("hr"));
+            this.push('&nbsp;', this.stacks.length - 1);
+        },
+
+        push: function(v, stack_idx=0) {
+            const s = document.createElement("span");
+            s.innerHTML = v;
+            this.stacks[stack_idx].append(s);
+        },
+
+        pop: function(stack_idx=0) {
+            if (this.stacks[stack_idx].childElementCount > 1)
+                this.stacks[stack_idx].removeChild(this.stacks[stack_idx].lastChild);
+        }
     }
 }
 
@@ -185,31 +222,27 @@ let fungespace = {
     }
 }
 
-let stackstack = {
-    div: document.getElementById("bf-stack"),
+let stack = {
     stacks: [],
 
     initialize: function() {
-        this.new_stack();
-        this.new_stack();
+        this.new();
     },
 
-    new_stack: function() {
-        this.stacks.push(document.createElement("div"));
-        const tl = document.createElement("div");
-        tl.append(this.stacks[this.stacks.length - 1]);
-        this.div.append(tl);
-        this.div.append(document.createElement("hr"));
+    new: function() {
+        this.stacks.push([]);
+        display.stack.new();
     },
 
     push: function(v, stack_idx=0) {
-        const s = document.createElement("span");
-        s.innerHTML = v;
-        this.stacks[stack_idx].append(s);
+        this.stacks[stack_idx].push(v);
+        display.stack.push(v, stack_idx);
     },
 
     pop: function(stack_idx=0) {
-        
+        const v = this.stacks[stack_idx].length > 0 ? this.stacks[stack_idx].pop() : 0;
+        display.stack.pop(stack_idx);
+        return v;
     }
 }
 
@@ -244,5 +277,5 @@ document.getElementById("bf-b-load").addEventListener("click", (e) => {
  * MAIN *
  ********/
 
-stackstack.initialize();
+stack.initialize();
 display.initialize();
