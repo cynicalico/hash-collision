@@ -1,6 +1,6 @@
 "use strict";
 
-function randint(start, end){
+function randint(start, end) {
     return Math.floor(Math.random() * (end - start) + start);
 }
 
@@ -17,7 +17,7 @@ let display = {
     i_row: document.getElementById("bf-i-row"),
     i_col: document.getElementById("bf-i-col"),
 
-    initialize: function() {
+    initialize: function () {
         this.pre = document.createElement("pre");
         this.div.append(this.pre);
 
@@ -62,7 +62,7 @@ let display = {
         this.cells[r][c].classList.remove('cursor');
     },
 
-    put_region_from_fungespace: function(fs_r, fs_c, w, h) {
+    put_region_from_fungespace: function (fs_r, fs_c, w, h) {
         this.clear();
 
         for (let r = 0; r < h; r++)
@@ -73,15 +73,15 @@ let display = {
                 this.put(r, c, String.fromCodePoint(codepoint));
             }
 
-        this.i_row.value = fs_r;
-        this.i_col.value = fs_c;
+        this.i_row.innerHTML = fs_r;
+        this.i_col.innerHTML = fs_c;
     },
 
     stack: {
         div: document.getElementById("bf-stack"),
         stacks: [],
 
-        new: function() {
+        new: function () {
             this.stacks.push(document.createElement("div"));
             const tl = document.createElement("div");
             tl.append(this.stacks[this.stacks.length - 1]);
@@ -90,15 +90,21 @@ let display = {
             this.push('&nbsp;', this.stacks.length - 1);
         },
 
-        push: function(v, stack_idx=0) {
+        push: function (v, stack_idx = 0) {
             const s = document.createElement("span");
             s.innerHTML = v;
             this.stacks[stack_idx].append(s);
         },
 
-        pop: function(stack_idx=0) {
+        pop: function (stack_idx = 0) {
             if (this.stacks[stack_idx].childElementCount > 1)
                 this.stacks[stack_idx].removeChild(this.stacks[stack_idx].lastChild);
+        },
+
+        clear: function (stack_idx = 0) {
+            const node = this.stacks[stack_idx];
+            while (node.firstChild)
+                node.removeChild(node.lastChild);
         }
     }
 }
@@ -175,7 +181,7 @@ let fungespace = {
         this.max_coord = [Math.max(this.max_coord[0], r + 1), Math.max(this.max_coord[1], c + 1)];
     },
 
-    clear: function() {
+    clear: function () {
         this.prpc = [];
         this.nrpc = [];
         this.nrnc = [];
@@ -198,8 +204,8 @@ let fungespace = {
 
         return s;
     },
-    
-    load_file_contents: function() {
+
+    load_file_contents: function () {
         this.clear();
 
         let r = 0, c = 0;
@@ -225,24 +231,29 @@ let fungespace = {
 let stack = {
     stacks: [],
 
-    initialize: function() {
+    initialize: function () {
         this.new();
     },
 
-    new: function() {
+    new: function () {
         this.stacks.push([]);
         display.stack.new();
     },
 
-    push: function(v, stack_idx=0) {
+    push: function (v, stack_idx = 0) {
         this.stacks[stack_idx].push(v);
         display.stack.push(v, stack_idx);
     },
 
-    pop: function(stack_idx=0) {
+    pop: function (stack_idx = 0) {
         const v = this.stacks[stack_idx].length > 0 ? this.stacks[stack_idx].pop() : 0;
         display.stack.pop(stack_idx);
         return v;
+    },
+
+    clear: function (stack_idx = 0) {
+        this.stacks[stack_idx].length = 0;
+        display.stack.clear(stack_idx);
     }
 }
 
