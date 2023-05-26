@@ -68,7 +68,7 @@ let display = {
         for (let r = 0; r < h; r++)
             for (let c = 0; c < w; c++) {
                 let codepoint = fungespace.get(fs_r + r, fs_c + c);
-                if (codepoint < 32 || codepoint > 126)
+                if (codepoint < 32 || codepoint > 127)
                     codepoint = 191;
                 this.put(r, c, String.fromCodePoint(codepoint));
             }
