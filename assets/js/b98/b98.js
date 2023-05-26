@@ -38,6 +38,8 @@ let display = {
 
             this.pre.append(document.createElement("hr"));
         }
+
+        this.set_cursor(state.ip_pos[0], state.ip_pos[1]);
     },
 
     get: function (r, c) {
@@ -257,9 +259,72 @@ let stack = {
     }
 }
 
+let output = {
+    div: document.getElementById("bf-output"),
+
+    initialize: function () {},
+
+    output_decimal: function () {
+        let v = stack.pop();
+        this._append(v);
+        this._append(' ');
+    },
+
+    output_char: function() {
+        let v = stack.pop();
+        this._append(String.fromCodePoint(v));
+    },
+
+    clear: function () {
+        this.div.innerHTML = '';
+    },
+
+    _append: function (v) {
+        this.div.innerHTML += v;
+    },
+}
+
+function InstructionPointer(sr = 0, sc = 0) {
+    this.r = sr;
+    this.c = sc;
+    this.dr = 0;
+    this.dc = 1;
+
+    this.reflect = function () {
+        this.dr *= -1;
+        this.dc *= -1;
+    }
+}
+
 let state = {
     selected_file: null,
     file_contents: null,
+
+    running: false,
+    run_timeout: 250,
+
+    ip: new InstructionPointer(),
+
+    step: function () {
+        const inst = fungespace.get(ip.r, ip.c);
+
+        switch (inst) {
+            case 48:  // 0
+            case 49:  // 1
+            case 50:  // 2
+            case 51:  // 3
+            case 52:  // 4
+            case 53:  // 5
+            case 54:  // 6
+            case 55:  // 7
+            case 56:  // 8
+            case 57:  // 9
+                break;
+
+            default:
+
+        }
+    }
 }
 
 document.getElementById("bf-i-file").addEventListener("change", (e) => {
@@ -282,6 +347,10 @@ document.getElementById("bf-i-file").addEventListener("change", (e) => {
 
 document.getElementById("bf-b-load").addEventListener("click", (e) => {
     document.getElementById("bf-i-file").click();
+});
+
+document.getElementById("bf-b-step").addEventListener("click", (e) => {
+    setTimeout(state.step);
 });
 
 /********
