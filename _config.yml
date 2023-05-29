@@ -3,8 +3,8 @@ plugins:
 
 title: Hash Collision
 author:
-  name: bo-fey
-  email: 93552084+bo-fey@users.noreply.github.com
+  name: beauregarde-f
+  email: 93552084+beauregarde-f@users.noreply.github.com
 
 url: https://hash-collision.com
 
@@ -12,6 +12,6 @@ remote_theme: jekyll/minima
 minima:
   skin: auto
   social_links:
-    - { platform: github, user_url: "https://github.com/bo-fey" }
+    - { platform: github, user_url: "https://github.com/beauregarde-f" }
 
 show_excerpts: true

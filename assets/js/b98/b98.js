@@ -64,7 +64,12 @@ let display = {
         this.cells[r][c].classList.remove('cursor');
     },
 
-    putRegionFromFungespace: function (fs_r, fs_c, w, h) {
+    putRegionFromFungespace: function (fs_r, fs_c, w = null, h = null) {
+        if (w === null)
+            w = Math.min(fungespace.maxCoord[1], this.COLS);
+        if (h === null)
+            h = Math.min(fungespace.maxCoord[0], this.ROWS);
+
         this.clear();
 
         for (let r = 0; r < h; r++)
@@ -77,8 +82,6 @@ let display = {
 
         this.iRow.innerHTML = fs_r;
         this.iCol.innerHTML = fs_c;
-
-        state.ip.moveTo(0, 0);
     },
 
     stack: {
@@ -226,9 +229,8 @@ let fungespace = {
             c++;
         }
 
-        const region_w = Math.min(this.maxCoord[1], display.COLS);
-        const region_h = Math.min(this.maxCoord[0], display.ROWS);
-        display.putRegionFromFungespace(0, 0, region_w, region_h);
+        display.putRegionFromFungespace(0, 0);
+        state.ip.moveTo(0, 0);
     }
 }
 
@@ -255,16 +257,32 @@ let stack = {
         return v;
     },
 
+    peek: function (stack_idx = 0) {
+        return (this.stacks[stack_idx].length > 0) ? this.stacks[stack_idx][this.stacks[stack_idx].length - 1] : 0;
+    },
+
     clear: function (stack_idx = 0) {
         this.stacks[stack_idx].length = 0;
         display.stack.clear(stack_idx);
+    },
+
+    duplicate: function (stack_idx = 0) {
+        this.push(this.peek(stack_idx), stack_idx);
+    },
+
+    swap: function (stack_idx = 0) {
+        let b = this.pop(stack_idx);
+        let a = this.pop(stack_idx);
+        this.push(b, stack_idx);
+        this.push(a, stack_idx);
     }
 }
 
 let output = {
     div: document.getElementById("bf-output"),
 
-    initialize: function () {},
+    initialize: function () {
+    },
 
     outputInteger: function () {
         let v = stack.pop();
@@ -272,7 +290,7 @@ let output = {
         this._append(' ');
     },
 
-    outputCharacter: function() {
+    outputCharacter: function () {
         let v = stack.pop();
         this._append(String.fromCodePoint(v));
     },
@@ -292,10 +310,36 @@ function InstructionPointer(sr = 0, sc = 0) {
     this.dr = 0;
     this.dc = 1;
 
-    this.move = function () {
-        display.unsetCursor(this.r, this.c);
+    this._wrap = function () {
+        if (fungespace.inBounds(this.r, this.c))
+            return;
+
+        this.reflect();
+        while (!fungespace.inBounds(this.r, this.c))
+            this._step();
+
+        while (fungespace.inBounds(this.r, this.c))
+            this._step();
+
+        this.reflect();
+        this._step();
+    }
+
+    this._step = function () {
         this.r += this.dr;
         this.c += this.dc;
+    }
+
+    this.step = function (isTrampoline = false) {
+        if (isTrampoline)
+            display.unsetCursor(this.r, this.c);
+        this._step();
+        this._wrap();
+    }
+
+    this.move = function () {
+        display.unsetCursor(this.r, this.c);
+        this.step();
         display.setCursor(this.r, this.c);
     }
 
@@ -304,6 +348,40 @@ function InstructionPointer(sr = 0, sc = 0) {
         this.r = r;
         this.c = c;
         display.setCursor(this.r, this.c);
+    }
+
+    this.goNorth = function () {
+        this.dr = -1;
+        this.dc = 0;
+    }
+
+    this.goEast = function () {
+        this.dr = 0;
+        this.dc = 1;
+    }
+
+    this.goSouth = function () {
+        this.dr = 1;
+        this.dc = 0;
+    }
+
+    this.goWest = function () {
+        this.dr = 0;
+        this.dc = -1;
+    }
+
+    this.turnRight = function () {
+        let dr = this.dr;
+        let dc = this.dc;
+        this.dr = -dc;
+        this.dc = dr;
+    }
+
+    this.turnLeft = function () {
+        let dr = this.dr;
+        let dc = this.dc;
+        this.dr = dc;
+        this.dc = -dr;
     }
 
     this.reflect = function () {
@@ -320,72 +398,106 @@ let state = {
     runTimeout: 250,
 
     ip: new InstructionPointer(),
+    stringmode: false,
 
     step: function () {
         const inst = fungespace.get(this.ip.r, this.ip.c);
+
+        if (this.stringmode) {
+            if (inst === 34)
+                this.stringmode = false;
+            else
+                stack.push(inst);
+
+        } else if (!this._doInst(inst))
+            return;
+
+        this.ip.move();
+
+        if (this.running)
+            setTimeout(() => this.step(), this.runTimeout);
+    },
+
+    _doInst: function (inst) {
+        let shouldContinue = true;
 
         switch (inst) {
             case 32:        //   Space
                 break;
 
             case 33:        // ! Logical Not
-                this.ip.reflect();
+                stack.push((stack.pop() === 0) ? 1 : 0);
                 break;
 
             case 34:        // " Toggle Stringmode
-                this.ip.reflect();
+                this.stringmode = true;
                 break;
 
             case 35:        // # Trampoline
-                this.ip.move();
+                this.ip.step(true);
                 break;
 
             case 36:        // $ Pop
+                stack.pop();
+                break;
+
+            case 37: {     // % Remainder
+                let b = stack.pop();
+                let a = stack.pop();
+                stack.push((b === 0) ? 0 : a % b);
+            }
+                break;
+
+            case 38:        // TODO: & Input Integer
                 this.ip.reflect();
                 break;
 
-            case 37:        // % Remainder
+            case 39:        // TODO: ' Fetch Character/98
                 this.ip.reflect();
                 break;
 
-            case 38:        // & Input Integer
+            case 40:        // TODO: ( Load Semantics/98
                 this.ip.reflect();
                 break;
 
-            case 39:        // ' Fetch Character/98
+            case 41:        // TODO: ) Unload Semantics/98
                 this.ip.reflect();
                 break;
 
-            case 40:        // ( Load Semantics/98
-                this.ip.reflect();
+            case 42: {      // * Multiply
+                let b = stack.pop();
+                let a = stack.pop();
+                stack.push(a * b);
+            }
                 break;
 
-            case 41:        // ) Unload Semantics/98
-                this.ip.reflect();
-                break;
-
-            case 42:        // * Multiply
-                this.ip.reflect();
-                break;
-
-            case 43:        // + Add
-                this.ip.reflect();
+            case 43: {      // + Add
+                let b = stack.pop();
+                let a = stack.pop();
+                stack.push(a + b);
+            }
                 break;
 
             case 44:        // , Output Character
                 output.outputCharacter();
                 break;
 
-            case 45:        // - Subtract
-                this.ip.reflect();
+            case 45: {      // - Subtract
+                let b = stack.pop();
+                let a = stack.pop();
+                stack.push(a - b);
+            }
                 break;
 
             case 46:        // . Output Integer
                 output.outputInteger();
                 break;
 
-            case 47:        // / Divide
-                this.ip.reflect();
+            case 47: {      // / Divide
+                let b = stack.pop();
+                let a = stack.pop();
+                stack.push((b === 0) ? 0 : a / b);
+            }
                 break;
 
             case 48:        // 0 Push Zero
@@ -402,160 +514,169 @@ let state = {
                 break;
 
             case 58:        // : Duplicate
-                this.ip.reflect();
+                stack.duplicate();
                 break;
 
-            case 59:        // ; Jump Over/98
+            case 59:        // TODO: ; Jump Over/98
                 this.ip.reflect();
                 break;
 
             case 60:        // < Go West
-                this.ip.reflect();
+                this.ip.goWest();
                 break;
 
-            case 61:        // = Execute/98/f
+            case 61:        // TODO: = Execute/98/f
                 this.ip.reflect();
                 break;
 
             case 62:        // > Go East
-                this.ip.reflect();
+                this.ip.goEast();
                 break;
 
             case 63:        // ? Go Away
-                this.ip.reflect();
+                switch (randInt(0, 4)) {
+                    case 0: this.ip.goNorth(); break;
+                    case 1: this.ip.goEast(); break;
+                    case 2: this.ip.goSouth(); break;
+                    case 3: this.ip.goWest(); break;
+                }
                 break;
 
             case 64:        // @ Stop
                 this.running = false;
                 display.unsetCursor(this.ip.r, this.ip.c);
-                return;
+                shouldContinue = false;
+                break;
 
-            case 65:        // A Fingerprint-Defined/98
+            case 65:        // TODO: A Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 66:        // B Fingerprint-Defined/98
+            case 66:        // TODO: B Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 67:        // C Fingerprint-Defined/98
+            case 67:        // TODO: C Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 68:        // D Fingerprint-Defined/98
+            case 68:        // TODO: D Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 69:        // E Fingerprint-Defined/98
+            case 69:        // TODO: E Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 70:        // F Fingerprint-Defined/98
+            case 70:        // TODO: F Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 71:        // G Fingerprint-Defined/98
+            case 71:        // TODO: G Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 72:        // H Fingerprint-Defined/98
+            case 72:        // TODO: H Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 73:        // I Fingerprint-Defined/98
+            case 73:        // TODO: I Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 74:        // J Fingerprint-Defined/98
+            case 74:        // TODO: J Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 75:        // K Fingerprint-Defined/98
+            case 75:        // TODO: K Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 76:        // L Fingerprint-Defined/98
+            case 76:        // TODO: L Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 77:        // M Fingerprint-Defined/98
+            case 77:        // TODO: M Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 78:        // N Fingerprint-Defined/98
+            case 78:        // TODO: N Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 79:        // O Fingerprint-Defined/98
+            case 79:        // TODO: O Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 80:        // P Fingerprint-Defined/98
+            case 80:        // TODO: P Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 81:        // Q Fingerprint-Defined/98
+            case 81:        // TODO: Q Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 82:        // R Fingerprint-Defined/98
+            case 82:        // TODO: R Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 83:        // S Fingerprint-Defined/98
+            case 83:        // TODO: S Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 84:        // T Fingerprint-Defined/98
+            case 84:        // TODO: T Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 85:        // U Fingerprint-Defined/98
+            case 85:        // TODO: U Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 86:        // V Fingerprint-Defined/98
+            case 86:        // TODO: V Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 87:        // W Fingerprint-Defined/98
+            case 87:        // TODO: W Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 88:        // X Fingerprint-Defined/98
+            case 88:        // TODO: X Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 89:        // Y Fingerprint-Defined/98
+            case 89:        // TODO: Y Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
-            case 90:        // Z Fingerprint-Defined/98
+            case 90:        // TODO: Z Fingerprint-Defined/98
                 this.ip.reflect();
                 break;
 
             case 91:        // [ Turn Left/98/2D
-                this.ip.reflect();
+                this.ip.turnLeft();
                 break;
 
             case 92:        // \ Swap
-                this.ip.reflect();
+                stack.swap();
                 break;
 
             case 93:        // ] Turn Right/98/2D
-                this.ip.reflect();
+                this.ip.turnRight();
                 break;
 
             case 94:        // ^ Go North/2D
-                this.ip.reflect();
+                this.ip.goNorth();
                 break;
 
             case 95:        // _ East-West If/2D
-                this.ip.reflect();
+                if (stack.pop() === 0) this.ip.goEast(); else this.ip.goWest();
                 break;
 
-            case 96:        // ` Greater
-                this.ip.reflect();
+            case 96: {      // ` Greater
+                let b = stack.pop();
+                let a = stack.pop();
+                stack.push((a > b) ? 1 : 0);
+            }
                 break;
 
             case 97:        // a Push Ten/98
@@ -567,47 +688,55 @@ let state = {
                 stack.push(inst - 87);
                 break;
 
-            case 103:       // g Get
+            case 103: {     // g Get
+                let y = stack.pop();
+                let x = stack.pop();
+                stack.push(fungespace.get(y, x));
+            }
+                break;
+
+            case 104:       // TODO: h Go High/98/3D
                 this.ip.reflect();
                 break;
 
-            case 104:       // h Go High/98/3D
+            case 105:       // TODO: i Input File/98/f
                 this.ip.reflect();
                 break;
 
-            case 105:       // i Input File/98/f
+            case 106:       // TODO: j Jump Forward/98
                 this.ip.reflect();
                 break;
 
-            case 106:       // j Jump Forward/98
+            case 107:       // TODO: k Iterate/98
                 this.ip.reflect();
                 break;
 
-            case 107:       // k Iterate/98
+            case 108:       // TODO: l Go Low/98/3D
                 this.ip.reflect();
                 break;
 
-            case 108:       // l Go Low/98/3D
-                this.ip.reflect();
-                break;
-
-            case 109:       // m High-Low If/98/3D
+            case 109:       // TODO: m High-Low If/98/3D
                 this.ip.reflect();
                 break;
 
             case 110:       // n Clear Stack/98
+                stack.clear();
+                break;
+
+            case 111:       // TODO: o Output File/98/f
                 this.ip.reflect();
                 break;
 
-            case 111:       // o Output File/98/f
-                this.ip.reflect();
+            case 112: {     // TODO: p Put
+                let y = stack.pop();
+                let x = stack.pop();
+                let v = stack.pop();
+                fungespace.put(y, x, v);
+                display.putRegionFromFungespace(0, 0);
+            }
                 break;
 
-            case 112:       // p Put
-                this.ip.reflect();
-                break;
-
-            case 113:       // q Quit/98
+            case 113:       // TODO: q Quit/98
                 this.ip.reflect();
                 break;
 
@@ -615,51 +744,50 @@ let state = {
                 this.ip.reflect();
                 break;
 
-            case 115:       // s Store Character/98
+            case 115:       // TODO: s Store Character/98
                 this.ip.reflect();
                 break;
 
-            case 116:       // t Split/98/c
+            case 116:       // TODO: t Split/98/c
                 this.ip.reflect();
                 break;
 
-            case 117:       // u Stack Under Stack/98
+            case 117:       // TODO: u Stack Under Stack/98
                 this.ip.reflect();
                 break;
 
             case 118:       // v Go South
+                this.ip.goSouth();
+                break;
+
+            case 119:       // TODO: w Compare/98/2D
                 this.ip.reflect();
                 break;
 
-            case 119:       // w Compare/98/2D
+            case 120:       // TODO: x Absolute Delta/98
                 this.ip.reflect();
                 break;
 
-            case 120:       // x Absolute Delta/98
-                this.ip.reflect();
-                break;
-
-            case 121:       // y Get SysInfo/98
+            case 121:       // TODO: y Get SysInfo/98
                 this.ip.reflect();
                 break;
 
             case 122:       // z No Operation/98
-                this.ip.reflect();
                 break;
 
-            case 123:       // { Begin Block/98
+            case 123:       // TODO: { Begin Block/98
                 this.ip.reflect();
                 break;
 
             case 124:       // | North-South If/2D
+                if (stack.pop() === 0) this.ip.goSouth(); else this.ip.goNorth();
+                break;
+
+            case 125:       // TODO: } End Block/98
                 this.ip.reflect();
                 break;
 
-            case 125:       // } End Block/98
-                this.ip.reflect();
-                break;
-
-            case 126:       // ~ Input Character
+            case 126:       // TODO: ~ Input Character
                 this.ip.reflect();
                 break;
 
@@ -667,10 +795,7 @@ let state = {
                 this.ip.reflect();
         }
 
-        this.ip.move();
-
-        if (this.running)
-            setTimeout(() => this.step(), this.runTimeout);
+        return shouldContinue;
     }
 }
 
