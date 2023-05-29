@@ -1,0 +1,242 @@
+.b98 {
+    --b98-bg-color: #eff1f5;
+    --b98-border-color: #5c5f77;
+    --b98-text-color: #4c4f69;
+    --b98-text-bg-color: #ccd0da;
+    --b98-text-select-color: #dc8a78;
+}
+
+@media (prefers-color-scheme: dark) {
+    .b98 {
+        --b98-bg-color: #232634;
+        --b98-border-color: #b5bfe2;
+        --b98-text-color: #c6d0f5;
+        --b98-text-bg-color: #414559;
+        --b98-text-select-color: #f2d5cf;
+    }
+}
+
+.b98 {
+    font-family: "Cousine";
+    font-size: 12px;
+    background-color: var(--b98-bg-color);
+    color: var(--b98-text-color);
+    line-height: 1;
+}
+
+.b98 hr {
+    flex-basis: 100%;
+    height: 0;
+    margin: 0;
+    border: 0;
+}
+
+.bf-btn {
+    border: 1px solid;
+    border-color: var(--b98-border-color);
+    background-color: var(--b98-bg-color);
+    color: var(--b98-text-color);
+    padding: 1px 3px 1px 3px;
+    /* font-size: 12px; */
+    margin: 0;
+    user-select: none;
+    text-decoration: none;
+    outline: none;
+    width: min-content;
+    height: min-content;
+    display: inline-flex;
+}
+
+.bf-btn:hover {
+    color: var(--b98-text-color);
+    background-color: var(--b98-text-bg-color);
+    text-decoration: none;
+}
+
+#bf-top-level {
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+}
+
+#bf-container {
+    display: flex;
+    justify-content: left;
+    flex-flow: wrap;
+    padding: 12px;
+}
+
+#bf-container .bf-header {
+    padding-top: 12px;
+}
+
+#bf-controls {
+    padding-bottom: 12px;
+    font-size: 0;
+}
+
+#bf-controls button {
+    border: 1px solid;
+    border-color: var(--b98-border-color);
+    margin: 0;
+    padding: 1px;
+}
+
+#bf-fungespace-coordinates-controller {
+    display: inline-flex;
+    justify-content: left;
+    flex-flow: wrap;
+    /*margin-bottom: 4px;*/
+}
+
+#bf-fungespace-coordinates-controller label {
+    display: inline-flex;
+    /*border: 1px solid;*/
+    /*border-right: 0;*/
+    /*border-color: var(--b98-border-color);*/
+    padding: 0;
+    margin: 0 0 0 0;
+    justify-content: center;
+    align-items: center;
+    /*font-size: 12px;*/
+}
+
+.bf-inp {
+    border: none;
+    box-shadow: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+#bf-i-row {
+    display: inline-flex;
+    min-width: 1em;
+    margin: 0 6px 0 0;
+}
+
+#bf-i-col {
+    display: inline-flex;
+    min-width: 1em;
+    /*margin: 0 12px 0 0;*/
+}
+
+#bf-fungespace {
+    display: flex;
+    justify-content: center;
+    overflow: visible;
+    flex-flow: wrap;
+    font-size: 0;
+}
+
+#bf-fungespace pre {
+    overflow: visible;
+    padding: 1px 0 0 1px;
+    background-color: var(--b98-bg-color);
+    border: none;
+    border-radius: unset;
+    margin: 0;
+}
+
+#bf-fungespace div {
+    text-align: left;
+}
+
+#bf-fungespace div div {
+    display: inline-flex;
+    overflow: hidden;
+    min-width: 10px;
+    max-width: 10px;
+    min-height: 16px;
+    max-height: 16px;
+}
+
+#bf-fungespace div div span {
+    display: inline-flex;
+    justify-content: center;
+    position: relative;
+    top: -4px;
+    min-width: 9px;
+    max-width: 9px;
+    min-height: 19px;
+    max-height: 19px;
+    margin: 5px 0 1px 0;
+    color: var(--b98-text-color);
+    background-color: var(--b98-text-bg-color);
+    font-size: 14px;
+}
+
+#bf-fungespace div div span.cursor {
+    background-color: #dc8a78;
+    color: #dce0e8;
+}
+
+#bf-stack {
+    display: flex;
+    justify-content: right;
+    flex-flow: wrap;
+    width: 100%;
+    background-color: var(--b98-bg-color);
+    overflow: hidden;
+}
+
+#bf-stack div {
+    display: inline-flex;
+    padding: 0;
+    margin: 1px 1px 1px 1px;
+    width: 100%;
+    background-color: var(--b98-text-bg-color);
+}
+
+#bf-stack div div {
+    display: flex;
+    width: 0;
+    flex: auto;
+    justify-content: flex-end;
+    /* flex-flow: wrap-reverse; */
+    min-height: 1em;
+    white-space: pre;
+    overflow: hidden;
+    /* flex-wrap: wrap; */
+    /* flex-direction: row; */
+    padding: 0;
+    /* float: right; */
+    /* position: relative; */
+    margin: 0 0 1px;
+}
+
+#bf-stack div div span {
+    /* display: inline-flex; */
+    justify-content: center;
+    color: var(--b98-text-color);
+    padding-left: 0.5em;
+    /* overflow: visible; */
+}
+
+#bf-output-container {
+    display: flex;
+    /* flex: 1 1 auto; */
+    flex-flow: wrap;
+    width: 100%;
+    background-color: var(--b98-bg-color);
+    margin: 1px 1px 1px 1px;
+    /* overflow: scroll; */
+}
+
+#bf-output {
+    display: flow-root;
+    width: 0;
+    flex: auto;
+    height: 100%;
+    background-color: var(--b98-text-bg-color);
+    color: var(--b98-text-color);
+    border: none;
+    outline: none;
+    box-shadow: none;
+    flex-wrap: wrap;
+    /* resize: vertical; */
+    /*overflow: scroll;*/
+    white-space: pre;
+    overflow-x: auto;
+    margin-bottom: 1px;
+}
