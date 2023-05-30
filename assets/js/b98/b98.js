@@ -16,6 +16,8 @@ let display = {
 
     iRow: document.getElementById("bf-i-row"),
     iCol: document.getElementById("bf-i-col"),
+    iTickDelay: document.getElementById("bf-i-tick-delay"),
+    iInstPerTick: document.getElementById("bf-i-inst-tick"),
 
     initialize: function () {
         this.pre = document.createElement("pre");
@@ -40,6 +42,9 @@ let display = {
         }
 
         this.setCursor(state.ip.r, state.ip.c);
+
+        this.iTickDelay.innerHTML = state.tickDelay;
+        this.iInstPerTick.innerHTML = state.instPerTick;
     },
 
     get: function (r, c) {
@@ -325,29 +330,23 @@ function InstructionPointer(sr = 0, sc = 0) {
         this._step();
     }
 
-    this._step = function () {
+    this._step = function (r, c) {
         this.r += this.dr;
         this.c += this.dc;
     }
 
-    this.step = function (isTrampoline = false) {
-        if (isTrampoline)
-            display.unsetCursor(this.r, this.c);
+    this.step = function () {
         this._step();
         this._wrap();
     }
 
     this.move = function () {
-        display.unsetCursor(this.r, this.c);
         this.step();
-        display.setCursor(this.r, this.c);
     }
 
     this.moveTo = function (r, c) {
-        display.unsetCursor(this.r, this.c);
         this.r = r;
         this.c = c;
-        display.setCursor(this.r, this.c);
     }
 
     this.goNorth = function () {
@@ -395,12 +394,32 @@ let state = {
     fileContents: null,
 
     running: false,
-    runTimeout: 250,
+    finished: false,
+    tickDelay: 100,
+    instPerTick: 1,
 
     ip: new InstructionPointer(),
     stringmode: false,
 
-    step: function () {
+    tick: function () {
+        if (this.finished)
+            return;
+
+        display.unsetCursor(this.ip.r, this.ip.c);
+
+        for (let i = 0; i < this.instPerTick; i++) {
+            this._step();
+            if (this.finished)
+                return;
+        }
+
+        display.setCursor(this.ip.r, this.ip.c);
+
+        if (this.running)
+            setTimeout(() => this.tick(), this.tickDelay);
+    },
+
+    _step: function () {
         const inst = fungespace.get(this.ip.r, this.ip.c);
 
         if (this.stringmode) {
@@ -410,12 +429,11 @@ let state = {
                 stack.push(inst);
 
         } else if (!this._doInst(inst))
-            return;
+            return false;
 
         this.ip.move();
 
-        if (this.running)
-            setTimeout(() => this.step(), this.runTimeout);
+        return true;
     },
 
     _doInst: function (inst) {
@@ -546,6 +564,7 @@ let state = {
                 this.running = false;
                 display.unsetCursor(this.ip.r, this.ip.c);
                 shouldContinue = false;
+                this.finished = true;
                 break;
 
             case 65:        // TODO: A Fingerprint-Defined/98
@@ -799,7 +818,7 @@ let state = {
     }
 }
 
-document.getElementById("bf-i-file").addEventListener("change", (e) => {
+document.getElementById("bf-i-file").addEventListener("change", e => {
     state.selectedFile = e.target.files[0];
 
     if (state.selectedFile === null) {
@@ -808,34 +827,66 @@ document.getElementById("bf-i-file").addEventListener("change", (e) => {
     }
 
     const rdr = new FileReader();
-    rdr.addEventListener("load", (e) => {
+    rdr.addEventListener("load", e => {
         state.fileContents = e.target.result;
     });
-    rdr.addEventListener("loadend", (e) => {
+    rdr.addEventListener("loadend", e => {
         fungespace.loadFileContents();
     });
     rdr.readAsText(state.selectedFile);
 });
 
-document.getElementById("bf-b-load").addEventListener("click", (e) => {
+document.getElementById("bf-b-load").addEventListener("click", e => {
     document.getElementById("bf-i-file").click();
 });
 
-document.getElementById("bf-b-run-edit").addEventListener("click", (e) => {
+document.getElementById("bf-b-run-edit").addEventListener("click", e => {
     if (!state.running) {
         state.running = true;
-        setTimeout(() => state.step());
+        setTimeout(() => state.tick());
     } else
         state.running = false;
 });
 
-document.getElementById("bf-b-reset").addEventListener("click", (e) => {
+document.getElementById("bf-b-reset").addEventListener("click", e => {
     state.reset();
     display.reset();
 });
 
-document.getElementById("bf-b-step").addEventListener("click", (e) => {
-    setTimeout(() => state.step());
+document.getElementById("bf-b-step").addEventListener("click", e => {
+    setTimeout(() => state.tick());
+});
+
+document.getElementById("bf-i-tick-delay").addEventListener("input", e => {
+    const v = parseInt(e.target.innerText);
+    if (!isNaN(v))
+        state.tickDelay = v;
+});
+
+document.getElementById("bf-i-inst-tick").addEventListener("input", e => {
+    const v = parseInt(e.target.innerText);
+    if (!isNaN(v))
+        state.instPerTick = v;
+});
+
+document.querySelectorAll(".bf-inp").forEach(el => {
+    el.addEventListener("keydown", function(e) {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+
+    el.addEventListener("paste", function(e) {
+        e.preventDefault();
+        let text = "";
+        if (e.clipboardData && e.clipboardData.getData) {
+            text = e.clipboardData.getData("text/plain");
+        } else if (window.clipboardData && window.clipboardData.getData) {
+            text = window.clipboardData.getData("Text");
+        }
+        document.execCommand("insertText", false, text);
+    });
 });
 
 /********

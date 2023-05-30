@@ -28,7 +28,15 @@
     flex-basis: 100%;
     height: 0;
     margin: 0;
-    border: 0;
+    border: none;
+}
+
+.spacer {
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    flex-grow: 1;
 }
 
 .bf-btn {
@@ -83,22 +91,20 @@
 }
 
 #bf-fungespace-coordinates-controller {
-    display: inline-flex;
+    display: flex;
     justify-content: left;
     flex-flow: wrap;
-    /*margin-bottom: 4px;*/
+    /*! margin-bottom: 4px; */
+    width: 100%;
 }
 
 #bf-fungespace-coordinates-controller label {
     display: inline-flex;
-    /*border: 1px solid;*/
-    /*border-right: 0;*/
-    /*border-color: var(--b98-border-color);*/
     padding: 0;
-    margin: 0 0 0 0;
+    margin: 0 0 1px 0;
     justify-content: center;
     align-items: center;
-    /*font-size: 12px;*/
+    border: none;
 }
 
 .bf-inp {
@@ -106,19 +112,42 @@
     box-shadow: none;
     outline: none;
     padding: 0;
-    margin: 0;
+    white-space: pre;
+    overflow: hidden;
+    height: 1em;
+    border-bottom: 1px solid var(--b98-border-color);
+}
+
+.bf-inp:not(.empty) br,
+.bf-inp img {
+    display: none;
+}
+
+.bf-inp * {
+    display: inline;
+    white-space: pre;
 }
 
 #bf-i-row {
-    display: inline-flex;
-    min-width: 1em;
-    margin: 0 6px 0 0;
+    min-width: 5ch;
+    margin-right: 12px;
+    margin-left: 3px;
 }
 
 #bf-i-col {
-    display: inline-flex;
-    min-width: 1em;
-    /*margin: 0 12px 0 0;*/
+    min-width: 5ch;
+    margin-left: 3px;
+}
+
+#bf-i-tick-delay {
+    min-width: 5ch;
+    margin-right: 12px;
+    margin-left: 3px;
+}
+
+#bf-i-inst-tick {
+    min-width: 5ch;
+    margin-left: 3px;
 }
 
 #bf-fungespace {
