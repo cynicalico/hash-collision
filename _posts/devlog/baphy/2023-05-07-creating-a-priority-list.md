@@ -1,7 +1,8 @@
 ---
-title: "Myco Devlog II: Creating a Priority List"
+layout: post
+title: "Baphy Devlog II: Creating a Priority List"
 date: 2023-05-07
-categories: devlog myco
+categories: devlog baphy
 excerpt_separator: <!--more-->
 ---
 
@@ -9,7 +10,7 @@ The event bus works, but needs a way to handle system dependencies. Like the eve
 
 <!--more-->
 
-In case you missed it, the [previous devlog]({% post_url devlog/myco/2023-04-20-creating-an-event-bus %}) goes over the implementation of the event bus used in Myco. The PrioList is an additional piece of code that augments the event bus, so this may make more sense why I want this if you've read that first.
+In case you missed it, the [previous devlog]({% post_url devlog/baphy/2023-04-20-creating-an-event-bus %}) goes over the implementation of the event bus used in Baphy. The PrioList is an additional piece of code that augments the event bus, so this may make more sense why I want this if you've read that first.
 
 ### The Problem
 
@@ -96,13 +97,13 @@ for (auto N = 500, row = 1; N <= 5'000; N += 500, row++) {
 
         for (auto i = 0; i < N; ++i) {
             std::string s(10, 0);
-            std::generate_n(s.begin(), 10, []() { return myco::get<char>(65, 90); });
+            std::generate_n(s.begin(), 10, []() { return baphy::get<char>(65, 90); });
             items.emplace_back(s);
         }
         std::ranges::sort(items);
 
         std::string check_string = "[";
-        for (const auto &[i, e]: myco::enumerate(items))
+        for (const auto &[i, e]: baphy::enumerate(items))
             check_string += fmt::format("{}{}", i != 0 ? ", " : "", e);
         check_string += "]";
 
@@ -115,7 +116,7 @@ for (auto N = 500, row = 1; N <= 5'000; N += 500, row++) {
             deps_v[items[i + 1]] = {items[i], items[i - 1], items[i - 2]};
         }
 
-        myco::shuffle(items);
+        baphy::shuffle(items);
 
         // do the benchmark
 }
@@ -128,9 +129,9 @@ The code for actually benchmarking the implementations:
 ```cpp
 template<template<typename> typename T, typename IT, typename DT>
 double benchmark(IT &items, DT &deps, const std::string &check_string) {
-    auto sw = myco::Stopwatch();
+    auto sw = baphy::Stopwatch();
     auto pl = T<int>();
-    for (const auto &[i, e]: myco::enumerate(items))
+    for (const auto &[i, e]: baphy::enumerate(items))
         pl.add(e, deps[e], i);
     if (pl.debug_stringify() != check_string)
         MYCO_LOG_ERROR("Bad {} {}", pl.debug_stringify(), check_string);

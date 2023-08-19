@@ -1,17 +1,18 @@
 ---
-title: "Myco Devlog I: Creating an Event Bus"
+layout: post
+title: "Baphy Devlog I: Creating an Event Bus"
 date: 2023-04-20
-categories: devlog myco
+categories: devlog baphy
 excerpt_separator: <!--more-->
 ---
 
-Event busses can simplify designs and allow for communication between classes that otherwise don't know about each other. Unfortunately, the event bus itself is not simple at all.
+Event buses can simplify designs and allow for communication between classes that otherwise don't know about each other. Unfortunately, the event bus itself is not simple at all.
 
 <!--more-->
 
 ### The Problem
 
-For my graphics engine, Myco, I wanted to try and decouple the modules in the system from each other. In previous attempts, figuring out if the Window instance should be part of the Application or part of the Engine, for example, took up a lot of my time for what felt like a question that should be pretty innocuous. Getting the answer wrong, however, created a whole new headache whenever two systems that previously didn't need to communicate suddenly gained that new requirement for a feature I wanted to implement. Sometimes this was doable, and sometimes it would require a whole re-write to fix.
+For my graphics engine, Baphy, I wanted to try and decouple the modules in the system from each other. In previous attempts, figuring out if the Window instance should be part of the Application or part of the Engine, for example, took up a lot of my time for what felt like a question that should be pretty innocuous. Getting the answer wrong, however, created a whole new headache whenever two systems that previously didn't need to communicate suddenly gained that new requirement for a feature I wanted to implement. Sometimes this was doable, and sometimes it would require a whole re-write to fix.
 
 This is where an event bus comes in.
 
@@ -22,7 +23,7 @@ I am not the first person to think of using an event bus to handle inter-system 
 
 ### Pre-planning
 
-I started out by looking for existing resources on how event busses might work. I largely found examples that used strings for both the event types as well as the payloads. I *really* didn't want to go down this route since strings are error-prone, and a small typo may take a long time to find. Using a string as the payload also removes type information--I wanted to send real structs.
+I started out by looking for existing resources on how event buses might work. I largely found examples that used strings for both the event types and the payloads. I *really* didn't want to go down this route since strings are error-prone, and a small typo may take a long time to find. Using a string as the payload also removes type information--I wanted to send real structs.
 
 Systems that use an enum for event types were also out. I wanted to allow the user to push events through the bus if desired, and needing all event types to be defined when the engine is compiled would not make that possible. I considered doing some kind of macro magic, and briefly experimented with code generation, but eventually decided against it.
 

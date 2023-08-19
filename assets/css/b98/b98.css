@@ -181,7 +181,7 @@
 }
 
 #bf-fungespace div div span {
-    display: inline-flex;
+    display: flow-root;
     justify-content: center;
     position: relative;
     top: -4px;
