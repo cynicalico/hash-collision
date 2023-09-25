@@ -1,14 +1,30 @@
+import { MDXRemote } from 'next-mdx-remote';
+import { serialize } from 'next-mdx-remote/serialize';
 import Head from 'next/head';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeCodeTitles from 'rehype-code-titles';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeSlug from 'rehype-slug';
 import Date from '../../components/date';
 import Layout from '../../components/layout';
 import { getAllPostIds, getPostData } from '../../lib/posts';
 import utilStyles from '../../styles/utils.module.css';
+import rehypePrettyCode from 'rehype-pretty-code';
 
 export async function getStaticProps({ params }) {
-  const postData = await getPostData(params.id);
+  const postData = getPostData(params.id);
+
+  const mdxSource = await serialize(postData.content, {
+    mdxOptions: {
+      rehypePlugins: [
+        rehypePrettyCode,
+      ],
+    },
+  });
 
   return {
     props: {
+      source: mdxSource,
       postData,
     },
   };
@@ -23,7 +39,12 @@ export async function getStaticPaths() {
   };
 }
 
-export default function Post({ postData }) {
+const components = {
+  h1: utilStyles.headingXl,
+  h2: utilStyles.headingLg
+}
+
+export default function Post({ source, postData }) {
   return (
     <Layout>
       <Head>
@@ -34,7 +55,7 @@ export default function Post({ postData }) {
       <div className={utilStyles.lightText}>
         <Date dateString={postData.date} />
       </div>
-      <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
+      <MDXRemote {...source} />
     </Layout>
   );
 }

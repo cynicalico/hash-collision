@@ -1,0 +1,32 @@
+div[data-rehype-pretty-code-fragment] {
+  display: grid;
+  overflow: scroll;
+}
+
+div[data-rehype-pretty-code-fragment] > pre {
+  padding: 1em;
+}
+
+code {
+  counter-reset: line;
+}
+ 
+code > [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+ 
+  /* Other styling */
+  display: inline-block;
+  width: 1rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: gray;
+}
+ 
+code[data-line-numbers-max-digits='2'] > [data-line]::before {
+  width: 2rem;
+}
+ 
+code[data-line-numbers-max-digits='3'] > [data-line]::before {
+  width: 3rem;
+}
