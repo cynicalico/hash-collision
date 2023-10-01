@@ -1,20 +1,18 @@
 import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import Head from 'next/head';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
-import rehypeCodeTitles from 'rehype-code-titles';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeSlug from 'rehype-slug';
+import rehypePrettyCode from 'rehype-pretty-code';
 import Date from '../../components/date';
 import Layout from '../../components/layout';
 import { getAllPostIds, getPostData } from '../../lib/posts';
 import utilStyles from '../../styles/utils.module.css';
-import rehypePrettyCode from 'rehype-pretty-code';
+import RandomButton from '../../components/random_button';
 
 export async function getStaticProps({ params }) {
   const postData = getPostData(params.id);
 
-  const mdxSource = await serialize(postData.content, {
+  const mdxSource = await serialize(postData.fileContents, {
+    parseFrontmatter: true,
     mdxOptions: {
       rehypePlugins: [
         rehypePrettyCode,
@@ -22,12 +20,7 @@ export async function getStaticProps({ params }) {
     },
   });
 
-  return {
-    props: {
-      source: mdxSource,
-      postData,
-    },
-  };
+  return { props: { mdxSource } };
 }
 
 export async function getStaticPaths() {
@@ -40,22 +33,23 @@ export async function getStaticPaths() {
 }
 
 const components = {
-  h1: utilStyles.headingXl,
-  h2: utilStyles.headingLg
+  RandomButton
 }
 
-export default function Post({ source, postData }) {
+export default function Post({ mdxSource }) {
   return (
     <Layout>
       <Head>
-        <title>{postData.title}</title>
+        <title>{mdxSource.frontmatter.title}</title>
       </Head>
 
-      <h1 className={utilStyles.headingXl}>{postData.title}</h1>
+      <h1 className={utilStyles.headingXl}>{mdxSource.frontmatter.title}</h1>
       <div className={utilStyles.lightText}>
-        <Date dateString={postData.date} />
+        <Date dateString={mdxSource.frontmatter.date} />
       </div>
-      <MDXRemote {...source} />
+      <div>
+        <MDXRemote {...mdxSource} components={components}/>
+      </div>
     </Layout>
   );
 }
