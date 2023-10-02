@@ -1,56 +1,42 @@
-import { useContext, useEffect } from 'react';
-import * as fs from "../../components/b98/fungespace";
-import { StateProvider, store } from "../../components/b98/store";
+import {useContext, useEffect, useRef} from 'react';
+import Fungespace from "../../components/b98/fungespace";
+import Controls from "../../components/b98/controls";
+import {StateProvider, store, Funge98} from "../../components/b98/store";
 import Layout from "../../components/layout";
-import styles from './b98.module.css';
+import styles from '../../components/b98/b98.module.css';
 
 function randint(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
 function B98Layout() {
-  const { state, dispatch } = useContext(store);
+  const {state, dispatch} = useContext(store);
+  const fungeInst = useRef(new Funge98());
 
   useEffect(() => {
-    if (!state.counting)
-      return;
-    const id = setTimeout(() => {
-      dispatch({ type: 'incrementCounter' });
-      dispatch({ type: 'setCell', r: randint(0, state.rows), c: randint(0, state.cols), v: randint(0, 10) });
-    });
-    return () => clearTimeout(id);
-  }, [state]);
+    if (state.running) {
+      const timer = setTimeout(() => {
+        const shouldStop = fungeInst.current.tick();
+        dispatch({type: 'tick', inst: fungeInst.current, shouldStop: shouldStop});
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [state.running, state.tick]);
 
-  return <div>
-    <div className={`${styles.b98} ${styles.top_level}`}>
-      <div className={`${styles.b98} ${styles.container}`}>
-        <fs.Fungespace />
-      </div>
+  return <div className={`${styles.b98} ${styles.top_level}`}>
+    <div className={`${styles.b98} ${styles.container}`}>
+      <Controls fungeInst={fungeInst}/>
+      <Fungespace/>
+      {state.tick}<br />
+      {state.running ? "true" : "false"}
     </div>
-    <button onClick={() => dispatch({ type: 'setCursor', v: [randint(0, state.rows), randint(0, state.cols)] })}>Move cursor</button>
-    <button onClick={() => dispatch({ type: 'setCell', r: randint(0, state.rows), c: randint(0, state.cols), v: randint(0, 10) })}>Random cell</button>
-    <br />
-    <br />
-
-    {state.counter}
-    <br />
-    <button onClick={() => {
-      dispatch({ type: 'startCounting' });
-    }}>Start</button>
-    <button onClick={() => {
-      dispatch({ type: 'stopCounting' });
-    }}>Stop</button>
-    <br />
-    <br />
   </div>;
 }
 
 export default function App() {
-  return (
-    <Layout>
-      <StateProvider>
-        <B98Layout />
-      </StateProvider>
-    </Layout>
-  );
+  return (<Layout>
+    <StateProvider>
+      <B98Layout/>
+    </StateProvider>
+  </Layout>);
 }
