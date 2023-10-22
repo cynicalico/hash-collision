@@ -7,7 +7,7 @@ export default function StackStack() {
 
   return <div className={`${styles.b98} ${styles.bf_stack}`}>
     {state.stackstack.map((e, i) => (<Fragment key={`stack${i}`}>
-      <div><div>{e.map((v) => (<span>{v}</span>))} &nbsp;</div></div>
+      <div><div>{e.map((v, i2) => (<span key={`space${i2}`}>{v}</span>))} &nbsp;</div></div>
       <hr className={styles.hr}/>
     </Fragment>))}
   </div>
