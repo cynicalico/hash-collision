@@ -30,29 +30,29 @@ export default function Layout({ children, home }) {
           <>
             <Image
               priority
-              src="/images/profile.png"
-              className={utilStyles.borderCircle}
-              height={144}
-              width={144}
-              alt={name}
+              src="/images/logo96x96.png"
+              // className={utilStyles.borderCircle}
+              height={96}
+              width={96}
+              alt={siteTitle}
             />
-            <h1 className={utilStyles.heading2Xl}>{name}</h1>
+            <h1 className={utilStyles.heading2Xl}>{siteTitle}</h1>
           </>
         ) : (
           <>
             <Link href="/">
               <Image
                 priority
-                src="/images/profile.png"
-                className={utilStyles.borderCircle}
-                height={108}
-                width={108}
-                alt={name}
+                src="/images/logo64x64.png"
+                // className={utilStyles.borderCircle}
+                height={64}
+                width={64}
+                alt={siteTitle}
               />
             </Link>
             <h2 className={utilStyles.headingLg}>
               <Link href="/" className={utilStyles.colorInherit}>
-                {name}
+                {siteTitle}
               </Link>
             </h2>
           </>

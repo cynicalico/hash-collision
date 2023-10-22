@@ -1,14 +1,11 @@
-import {Cousine} from 'next/font/google';
 import {Fragment, useContext} from 'react';
 import {store} from "../../components/b98/store";
-import styles from './b98.module.css';
-
-const cousine = Cousine({weight: '700', subsets: ['latin']});
+import styles from '../../styles/b98.module.css';
 
 export default function Fungespace() {
   const {state} = useContext(store);
 
-  return <div className={`${styles.b98} ${styles.base} ${cousine.className}`}>
+  return <div className={`${styles.b98} ${styles.base}`}>
     <pre className={styles.base2}>
       {state.viewport.map((_, r) => (<Fragment key={`fragment${r}`}>
         <div className={styles.row} key={`row${r}`}>

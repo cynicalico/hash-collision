@@ -3,13 +3,6 @@ title: "Baphy Devlog II: Creating a Priority List"
 date: '2023-05-07'
 ---
 
-<br />
-<RandomButton />
-<RandomButton />
-<RandomButton />
-<RandomButton />
-<RandomButton />
-
 The event bus works, but needs a way to handle system dependencies. Like the event bus itself, this ended up not being a simple task.
 
 In case you missed it, the [previous devlog](/blog/2023-04-20_creating-an-event-bus) goes over the implementation of the event bus used in Baphy. The PrioList is an additional piece of code that augments the event bus, so this may make more sense why I want this if you've read that first.
@@ -60,9 +53,9 @@ There are a lot of `std::unordered_map`s there, and we'll discuss that later. Th
   4. If the min index is less than the max index, go to step .
   5. Choose the max index of an unmet dependency, and "bubble" it, meaning move it so that it is past the previously found min index. 
   6. Remove that item from the list of unmet dependencies.
-  6. Find the new min and max indices, go to step 4.
-  7. Insert the new name/value pair at the min index.
-  8. Fix the `idxs` mapping for all entries past the newly inserted item.
+  7. Find the new min and max indices, go to step 4.
+  8. Insert the new name/value pair at the min index.
+  9. Fix the `idxs` mapping for all entries past the newly inserted item.
 
 ### Performance Improvements
 
